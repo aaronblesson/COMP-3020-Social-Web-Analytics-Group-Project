@@ -12,14 +12,15 @@ el = el[el[, "from"] != el[, "to"], , drop = FALSE]
 g = graph_from_edgelist(el, directed = TRUE)
 
 
-# prints number of accounts, links, and density. 
+# prints number of accounts, links, density, and number of groups 
 vcount(g)
 ecount(g)
 round(edge_density(g), 4)
+components(g, mode = "weak")$no
 
 #shows in-degree
 #mode = in to show reposters only
-head(sort(degree(g, mode = "in"), decreasing = TRUE), 5)
+head(sort(degree(g, mode = "in"), decreasing = TRUE), 10)
 
 
 # page rank, method adapted from labs
@@ -69,11 +70,18 @@ pageRank = function(g) {
 # shows PageRank Results attached to account names
 p = pageRank(g)
 names(p) = V(g)$name
-head(sort(p, decreasing = TRUE), 5)
+head(sort(p, decreasing = TRUE), 10)
 
 #stores follower counts for each post author
 followers = postData$followers_count[
   match(V(g)$name, postData$author_handle)]
+
+#show specific account followers for analysis
+followers[match(c("thebulwark.com", 
+                  "merovingians.bsky.social", 
+                  "jcollins.bsky.social", 
+                  "katherinepomps.bsky.social"), 
+                V(g)$name)]
 
 #sets dot colors, orange for author, blue for reposter
 V(g)$color = ifelse(
@@ -108,3 +116,6 @@ plot(g2, layout = layout_with_kk(g2),
      vertex.label.font = 2,
      edge.arrow.size = 0.1,
      main = "Largest Connected Group")
+
+vcount(g2)
+ecount(g2)
